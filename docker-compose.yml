@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+
+  user-api:
+    build: ./user-api
+    ports:
+      - "80:8000"
+    command: uvicorn main:app --host 0.0.0.0 --reload
+    volumes:
+      - ./user-api:/usr/src/app
+    environment:
+      - DATABASE_URL=postgresql://user:password@database:5432/alpha
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=db+postgresql://user:password@database:5432/alpha
+    # depends_on:
+    #   - redis
+    #   - database
+
+    #   worker:
+    #     build: ./user-api
+    #     command: celery -A tasks worker --loglevel=info --logfile=logs/celery.log
+    #     volumes:
+    #       - ./user-api:/usr/src/app
+    #     environment:
+    #       - CELERY_BROKER_URL=redis://redis:6379/0
+    #       - CELERY_RESULT_BACKEND=db+postgresql://user:password@database:5432/alpha
+    #     depends_on:
+    #       - user-api
+    #       - redis
+    #       - database
+
+    #   redis:
+    #     image: redis:latest
+
+    #   database:
+    #     image: postgres:latest
+    #     volumes:
+    #       - postgres_data:/var/lib/postgresql/data/
+    #     environment:
+    #       - POSTGRES_USER=user
+    #       - POSTGRES_PASSWORD=password
+    #       - POSTGRES_DB=alpha
+    #     ports:
+    #       - "5432:5432"
+    #     user: postgres
+
+    #   flower:
+    #     image: mher/flower:0.9.7
+    #     command:
+    #       [
+    #         'flower',
+    #         '--broker=redis://redis:6379/0',
+    #         '--port=5555'
+    #       ]
+    #     links:
+    #       - redis:redis
+    #     ports:
+    #       - 5557:5555
+    #     depends_on:
+    #       - user-api
+    #       - redis
+    #       - database
+
+    # volumes:
+    #   postgres_data:

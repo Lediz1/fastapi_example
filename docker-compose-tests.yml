@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  app-test:
+    build:
+      context: ./
+      dockerfile: user-api/test.Dockerfile
+    ports:
+      - "8000:8000"
+    command: "pytest ./user-api/tests/tests.py"
+    environment:
+      - CELERY_BROKER_URL=redis://localhost:6379/0,
+      - CELERY_RESULT_BACKEND=sqla+postgresql://user:password@database:5432/alpha
+    # depends_on:
+    #   - redis
+    #   - database-test
+
+    #   worker-test:
+    #     build: ./user-api
+    #     command: celery -A tasks worker --loglevel=info --logfile=logs/celery.log
+    #     volumes:
+    #       - ./user-api:/usr/src/app
+    #     environment:
+    #       - CELERY_BROKER_URL=redis://redis:6379/0
+    #       - CELERY_RESULT_BACKEND=db+postgresql://user:password@database-test:5432/alpha
+    #     depends_on:
+
+    #       - redis
+    #       - database-test
+
+    #   redis:
+    #     image: redis:latest
+
+    #   database-test:
+    #     image: postgres:latest
+    #     volumes:
+    #       - postgres_data:/var/lib/postgresql/data/
+    #     environment:
+    #       - POSTGRES_USER=user
+    #       - POSTGRES_PASSWORD=password
+    #       - POSTGRES_DB=alpha
+    #     ports:
+    #       - "5432:5432"
+    #     user: postgres
+    #   # flower:
+    #   #   image: mher/flower:0.9.7
+    #   #   command:
+    #   #     [
+    #   #       'flower',
+    #   #       '--broker=redis://redis:6379/0',
+    #   #       '--port=5555'
+    #   #     ]
+    #   #   links:
+    #   #     - redis:redis
+    #   #   ports:
+    #   #     - 5557:5555
+    #   #   depends_on:
+    #   #     - user-api
+    #   #     - redis
+    #   #     - database
+
+    # volumes:
+    #   postgres_data:
